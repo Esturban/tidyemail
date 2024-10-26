@@ -13,24 +13,27 @@ if __name__ == "__main__":
     # Account credentials from ProtonMail Bridge
     username = os.environ['BRIDGE_USER']
     password = os.environ['BRIDGE_TOKEN']
-    imap_server = os.environ['IMAP_SERVER']
+    imap_server = 'host.docker.internal' if os.path.exists('/.dockerenv') else os.environ['IMAP_SERVER']
     imap_port = int(os.environ['IMAP_PORT'])  # IMAP over ProtonMail Bridge
+
     # Specify the start and end dates
     start_date = (datetime.now() - timedelta(days=365*8)).strftime("%d-%b-%Y")
     end_date = datetime.now().strftime("%d-%b-%Y")  # Today
     verbose=None
+
     # Connect to the server
     mail = connect_to_imap_server(imap_server, imap_port, username, password, verbose=True)
     if not mail:
         exit()
-
     # List available folders
-    folders = list_folders(mail)
+    #folders = list_folders(mail)
     folder_name = os.environ['FOLDER']
-    #print(folders)
+    
+
     # Fetch emails from a specific sender
     emails = fetch_emails(mail, start_date, end_date, folder_name=folder_name,search_criteria=domains_criteria(), max_emails = 1500, verbose=verbose)
     email_ids = [email_id for email_id, msg in emails]
+    
     target_folder = os.environ['TARGET_FOLDER']
     # Move emails to the target folder
     move_emails(mail, email_ids, target_folder, verbose=verbose)
