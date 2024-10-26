@@ -17,7 +17,7 @@ if __name__ == "__main__":
     imap_port = int(os.environ['IMAP_PORT'])  # IMAP over ProtonMail Bridge
     # Specify the start and end dates
     start_date = (datetime.now() - timedelta(days=365*8)).strftime("%d-%b-%Y")
-    end_date = "1-Sep-2024"#datetime.now().strftime("%d-%b-%Y")  # Today
+    end_date = datetime.now().strftime("%d-%b-%Y")  # Today
     verbose=None
     # Connect to the server
     mail = connect_to_imap_server(imap_server, imap_port, username, password, verbose=True)
