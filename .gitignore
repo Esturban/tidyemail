@@ -3,3 +3,4 @@ venv
 *.code-workspace
 **.pyc
 *.json
+!.devcontainer/devcontainer.json
