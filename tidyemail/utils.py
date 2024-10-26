@@ -19,14 +19,11 @@ def connect_to_imap_server(imap_server, imap_port, username, password, verbose=N
     """
     try:
         # Connect to the server
-        # Connect to the server
         mail = imaplib.IMAP4(imap_server, imap_port)
         if verbose: print("Connected to the server.")
-
         # Login to your account
         mail.login(username, password)
         if verbose: print("Logged in successfully.")
-
         return mail
     except imaplib.IMAP4.error as e:
         print(f"IMAP error: {e}")
@@ -49,9 +46,8 @@ def fetch_emails(mail, start_date, end_date, folder_name="INBOX", max_emails=20,
     """
     try:
         # Select the specified folder
-        mail.select(folder_name)
+        mail.select(f'"{folder_name.replace("\"", "\\\"")}"')
         if verbose: print(f"Selected folder: {folder_name}")
-
         # Search for unread emails within the date range
         search_criteria = f'(UNSEEN SINCE {start_date} BEFORE {end_date})'
         status, messages = mail.search(None, search_criteria)
