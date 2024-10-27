@@ -208,7 +208,7 @@ def move_emails(mail, email_ids, target_folder, verbose=None):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def domains_criteria():
+def domains_criteria(loc=None):
     """
     Build the search criteria string for the specified domains.
 
@@ -218,9 +218,12 @@ def domains_criteria():
     Returns:
         str: The search criteria string.
     """
-    with open(os.environ["CRITERIA_FILE"], 'r') as file:
-        domains = json.load(file).get("domains", [])
-        
+    if loc is None:
+        with open(os.environ["CRITERIA_FILE"], 'r') as file:
+            domains = json.load(file).get("domains", [])
+    else:
+        with open(loc, 'r') as file:
+            domains = json.load(file).get("domains", [])
     # Start with the first domain
     criteria = f'FROM {domains[0]}'
     
