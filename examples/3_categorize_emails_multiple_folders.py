@@ -33,7 +33,7 @@ if __name__ == "__main__":
     target_folders = [item.strip() for item in os.environ['TARGET_FOLDERS'].split(',')]
     for i in range(len(criteria)):
         # Fetch emails from a specific sender
-        emails = fetch_emails(mail, start_date, end_date, folder_name=folder_name,search_criteria=domains_criteria(loc = criteria[i]), max_emails = 1500, verbose=verbose)
+        emails = fetch_emails(mail, start_date, end_date, folder_name=folder_name,search_criteria=domains_criteria(loc = criteria[i],bind = 'FROM'), max_emails = 1500, verbose=verbose)
         email_ids = [email_id for email_id, msg in emails]
         
         
