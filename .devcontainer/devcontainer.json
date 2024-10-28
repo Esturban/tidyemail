@@ -1,0 +1,17 @@
+{
+    "name": "Tidyemail",
+    "dockerFile": "Dockerfile",
+    "context": "..",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-vscode-remote.remote-containers"
+    ],
+    "remoteUser": "root",
+    "forwardPorts": ["${localEnv:IMAP_PORT}"],
+    "containerEnv": {
+        "PORT": "${localEnv:IMAP_PORT}"
+    }
+}

@@ -1,7 +1,9 @@
 import imaplib
 import email
+import os
 from email.header import decode_header
 import re
+import json
 
 def connect_to_imap_server(imap_server, imap_port, username, password, verbose=None):
     """
@@ -19,28 +21,26 @@ def connect_to_imap_server(imap_server, imap_port, username, password, verbose=N
     """
     try:
         # Connect to the server
-        # Connect to the server
         mail = imaplib.IMAP4(imap_server, imap_port)
         if verbose: print("Connected to the server.")
-
         # Login to your account
         mail.login(username, password)
         if verbose: print("Logged in successfully.")
-
         return mail
     except imaplib.IMAP4.error as e:
         print(f"IMAP error: {e}")
         return
 
-def fetch_emails(mail, start_date, end_date, folder_name="INBOX", max_emails=20, verbose=None):
+def fetch_emails(mail, start_date, end_date, folder_name="INBOX", search_criteria=None, max_emails=20, verbose=None):
     """
-    Fetch unread emails from the specified folder on the ProtonMail Bridge server.
+    Fetch emails from the specified folder on the ProtonMail Bridge server based on the search criteria.
 
     Args:
         mail (IMAP4): The IMAP4 connection object
         folder_name (str, optional): The name of the folder to fetch emails from. Defaults to "INBOX".
         start_date (str): The start date for the search in 'dd-MMM-yyyy' format
         end_date (str): The end date for the search in 'dd-MMM-yyyy' format
+        search_criteria (str, optional): The search criteria for fetching emails. Defaults to None.
         max_emails (int, optional): The maximum number of emails to fetch. Defaults to 20.
         verbose (bool, optional): Whether to print the email content. Defaults to None.
 
@@ -49,14 +49,19 @@ def fetch_emails(mail, start_date, end_date, folder_name="INBOX", max_emails=20,
     """
     try:
         # Select the specified folder
-        mail.select(folder_name)
+        mail.select(f'"{folder_name.replace("\"", "\\\"")}"')
         if verbose: print(f"Selected folder: {folder_name}")
 
-        # Search for unread emails within the date range
-        search_criteria = f'(UNSEEN SINCE {start_date} BEFORE {end_date})'
+        # Set default search criteria if not provided
+        if not search_criteria:
+            search_criteria = f'(UNSEEN SINCE {start_date} BEFORE {end_date})'
+        else:
+            search_criteria = f'({search_criteria} SINCE {start_date} BEFORE {end_date})'
+
+        # Search for emails based on the search criteria
         status, messages = mail.search(None, search_criteria)
         if status != "OK":
-            if verbose: print("No unread emails found.")
+            if verbose: print("No emails found.")
             return []
 
         # Convert messages to a list of email IDs
@@ -175,3 +180,56 @@ def list_folders(mail, verbose=None):
             print(f"Folder: {folder_name}")
 
     return folder_names
+
+def move_emails(mail, email_ids, target_folder, verbose=None):
+    """
+    Move emails to the specified target folder on the ProtonMail Bridge server.
+
+    Args:
+        mail (IMAP4): The IMAP4 connection object
+        email_ids (list): A list of email IDs to move
+        target_folder (str): The name of the target folder
+        verbose (bool, optional): Whether to print the email content. Defaults to None.
+    """
+    try:
+        # Quote the target folder name to handle special characters and spaces
+        # Loop through each email ID and move to the target folder
+        for email_id in email_ids:
+            mail.copy(email_id, f'"{target_folder.replace("\"", "\\\"")}"')
+            mail.store(email_id, '+FLAGS', '\\Deleted')
+            if verbose: print(f"Moved email {email_id} to {target_folder}.")
+
+        # Expunge deleted emails
+        mail.expunge()
+        if verbose: print("Expunged deleted emails.")
+
+    except imaplib.IMAP4.error as e:
+        print(f"IMAP error: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def domains_criteria(loc=None,bind="FROM"):
+    """
+    Build the search criteria string for the specified domains.
+
+    Args:
+        None
+
+    Returns:
+        str: The search criteria string.
+    """
+    if loc is None:
+        with open(os.environ["CRITERIA_FILE"], 'r') as file:
+            domains = json.load(file).get("domains", [])
+    else:
+        with open(loc, 'r') as file:
+            domains = json.load(file).get("domains", [])
+    # Start with the first domain
+    if bind is None: bind = "FROM"
+    criteria = f'{bind} {domains[0]}'
+    
+    # Combine the rest of the domains using nested OR
+    for domain in domains[1:]:
+        criteria = f'OR ({bind} {domain}) ({criteria})'
+    
+    return criteria
