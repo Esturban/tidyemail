@@ -26,7 +26,7 @@ if __name__ == "__main__":
     if not mail:
         exit()
     # List available folders
-    #folders = list_folders(mail)
+    print(list_folders(mail))
     folder_name = os.environ['FOLDER']
     
     criteria = [item.strip() for item in os.environ['CRITERIA_FILES'].split(',')]
