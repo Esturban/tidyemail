@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, master, main]
+  push:
+    branches: [dev]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: |
+          sudo apt-get install -y shellcheck 2>/dev/null || true
+          find . -name "*.sh" -not -path "*/node_modules/*" -not -path "*/.git/*" \
+            | xargs shellcheck --severity=error
