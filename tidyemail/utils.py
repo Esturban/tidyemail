@@ -2,7 +2,6 @@ import imaplib
 import email
 import os
 from email.header import decode_header
-import re
 import json
 
 def connect_to_imap_server(imap_server, imap_port, username, password, verbose=None):
@@ -22,10 +21,12 @@ def connect_to_imap_server(imap_server, imap_port, username, password, verbose=N
     try:
         # Connect to the server
         mail = imaplib.IMAP4(imap_server, imap_port)
-        if verbose: print("Connected to the server.")
+        if verbose:
+            print("Connected to the server.")
         # Login to your account
         mail.login(username, password)
-        if verbose: print("Logged in successfully.")
+        if verbose:
+            print("Logged in successfully.")
         return mail
     except imaplib.IMAP4.error as e:
         print(f"IMAP error: {e}")
@@ -50,7 +51,8 @@ def fetch_emails(mail, start_date, end_date, folder_name="INBOX", search_criteri
     try:
         # Select the specified folder
         mail.select(f'"{folder_name.replace("\"", "\\\"")}"')
-        if verbose: print(f"Selected folder: {folder_name}")
+        if verbose:
+            print(f"Selected folder: {folder_name}")
 
         # Set default search criteria if not provided
         if not search_criteria:
@@ -61,7 +63,8 @@ def fetch_emails(mail, start_date, end_date, folder_name="INBOX", search_criteri
         # Search for emails based on the search criteria
         status, messages = mail.search(None, search_criteria)
         if status != "OK":
-            if verbose: print("No emails found.")
+            if verbose:
+                print("No emails found.")
             return []
 
         # Convert messages to a list of email IDs
@@ -114,7 +117,8 @@ def mark_emails_as_read(mail, email_ids, verbose=None):
         # Loop through each email ID and mark as read
         for email_id in email_ids:
             mail.store(email_id, '+FLAGS', '\\Seen')
-            if verbose: print(f"Marked email {email_id} as read.")
+            if verbose:
+                print(f"Marked email {email_id} as read.")
 
     except imaplib.IMAP4.error as e:
         print(f"IMAP error: {e}")
@@ -154,7 +158,8 @@ def fetch_and_mark_emails(username, password, imap_server, imap_port, start_date
 
     # Logout and close the connection
     mail.logout()
-    if verbose: print("Logged out successfully.")
+    if verbose:
+        print("Logged out successfully.")
 
 def list_folders(mail, verbose=None):
     """
@@ -197,11 +202,13 @@ def move_emails(mail, email_ids, target_folder, verbose=None):
         for email_id in email_ids:
             mail.copy(email_id, f'"{target_folder.replace("\"", "\\\"")}"')
             mail.store(email_id, '+FLAGS', '\\Deleted')
-            if verbose: print(f"Moved email {email_id} to {target_folder}.")
+            if verbose:
+                print(f"Moved email {email_id} to {target_folder}.")
 
         # Expunge deleted emails
         mail.expunge()
-        if verbose: print("Expunged deleted emails.")
+        if verbose:
+            print("Expunged deleted emails.")
 
     except imaplib.IMAP4.error as e:
         print(f"IMAP error: {e}")
@@ -225,7 +232,8 @@ def domains_criteria(loc=None,bind="FROM"):
         with open(loc, 'r') as file:
             domains = json.load(file).get("domains", [])
     # Start with the first domain
-    if bind is None: bind = "FROM"
+    if bind is None:
+        bind = "FROM"
     criteria = f'{bind} {domains[0]}'
     
     # Combine the rest of the domains using nested OR
