@@ -2,11 +2,10 @@ import os
 import sys
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-import json
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from tidyemail import fetch_emails, connect_to_imap_server, list_folders, move_emails,domains_criteria
+from tidyemail import fetch_emails, connect_to_imap_server, move_emails,domains_criteria
 
 if __name__ == "__main__":
     load_dotenv()
