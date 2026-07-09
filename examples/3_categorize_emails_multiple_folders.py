@@ -2,7 +2,6 @@ import os
 import sys
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-import json
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
