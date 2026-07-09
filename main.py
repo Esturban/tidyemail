@@ -11,14 +11,13 @@ if __name__ == "__main__":
     imap_server = os.environ['IMAP_SERVER']
     imap_port = int(os.environ['IMAP_PORT'])  # IMAP over ProtonMail Bridge
     # Specify the start and end dates
-    start_date = (datetime.now() - timedelta(days=180)).strftime("%d-%b-%Y")
+    start_date = (datetime.now() - timedelta(days=365*2)).strftime("%d-%b-%Y")
     end_date = datetime.now().strftime("%d-%b-%Y")  # Today
     verbose=None
     # Connect to the server
-    mail = connect_to_imap_server(imap_server, imap_port, username, password, verbose=verbose)
+    mail = connect_to_imap_server(imap_server, imap_port, username, password, verbose=True)
     if not mail:
         exit()
-
     # List available folders
     folders = list_folders(mail)
     folder_name = os.environ['FOLDER']
@@ -29,10 +28,7 @@ if __name__ == "__main__":
 
     # Mark emails as read
     mark_emails_as_read(mail, email_ids, verbose=verbose)
-
     # Logout and close the connection
     mail.logout()
     print(f"{len(email_ids)} email(s) marked as read.")
     print("Logged out successfully.")
-    # Call the function with the parameters
-    #fetch_and_mark_emails(username, password, imap_server, imap_port,start_date,end_date,verbose = True)

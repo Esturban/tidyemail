@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # Account credentials from ProtonMail Bridge
     username = os.environ['BRIDGE_USER']
     password = os.environ['BRIDGE_TOKEN']
-    imap_server = os.environ['IMAP_SERVER']
+    imap_server = 'host.docker.internal' if os.path.exists('/.dockerenv') else os.environ['IMAP_SERVER']
     imap_port = int(os.environ['IMAP_PORT'])  # IMAP over ProtonMail Bridge
     # Specify the start and end dates
     start_date = (datetime.now() - timedelta(days=365*2)).strftime("%d-%b-%Y")
@@ -37,4 +37,4 @@ if __name__ == "__main__":
     # Logout and close the connection
     mail.logout()
     print(f"{len(email_ids)} email(s) marked as read.")
-    print("Logged out successfully.")
+    #print("Logged out successfully.")
