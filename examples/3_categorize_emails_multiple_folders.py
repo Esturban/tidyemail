@@ -2,7 +2,6 @@ import os
 import sys
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
-import json
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -26,7 +25,7 @@ if __name__ == "__main__":
     if not mail:
         exit()
     # List available folders
-    #folders = list_folders(mail)
+    print(list_folders(mail))
     folder_name = os.environ['FOLDER']
     
     criteria = [item.strip() for item in os.environ['CRITERIA_FILES'].split(',')]
